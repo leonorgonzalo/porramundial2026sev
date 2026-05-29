@@ -1,0 +1,1 @@
+ALTER TABLE "app_meta" ADD COLUMN "locked" boolean DEFAULT false NOT NULL;
