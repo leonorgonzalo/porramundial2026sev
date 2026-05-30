@@ -1,14 +1,21 @@
 import { drizzle } from "drizzle-orm/d1";
-// Cambia esto quitando el ".js" del final:
-import * as schema from "./schema"; 
+import * as schema from "./schema";
 
-export interface Env {
-  DB: D1Database;
+let activeDb: any = null;
+
+// Inicializador para que Cloudflare le inyecte la base de datos en la petición
+export function initDb(env: any) {
+  if (!activeDb) {
+    activeDb = drizzle(env.DB, { schema });
+  }
 }
 
-export default {
-  async fetch(request: Request, env: Env) {
-    const db = drizzle(env.DB, { schema });
-    return new Response("¡Porra Mundial conectada con éxito a Cloudflare D1!");
-  },
-};
+// Tus archivos de /api seguirán importando esta 'db' exactamente como antes
+export const db = new Proxy({}, {
+  get(target, prop) {
+    if (!activeDb) {
+      throw new Error("La base de datos D1 no ha sido inicializada todavía.");
+    }
+    return Reflect.get(activeDb, prop);
+  }
+}) as ReturnType<typeof drizzle<typeof schema>>;
