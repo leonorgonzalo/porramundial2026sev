@@ -5,7 +5,7 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
-  "main": "db/index.ts", // O "index.ts" a secas si lo creaste en la raíz
+  "main": "index.ts", 
   "assets": {
     "directory": "."
   }
