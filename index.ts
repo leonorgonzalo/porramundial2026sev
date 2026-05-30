@@ -1,35 +1,31 @@
 import { initDb } from "./db/index";
 
+// Importamos manualmente tus endpoints de la carpeta api
+import * as apuestas from "./api/apuestas";
+import * as participantes from "./api/participantes";
+import * as meta from "./api/meta";
+
 export default {
   async fetch(request: Request, env: any, ctx: any) {
-    // 1. Conectamos el cable real a tu porra-db de Cloudflare
+    // 1. Inyectamos la base de datos de Cloudflare pasándole el env
     initDb(env);
 
-    // 2. Comprobamos si la petición va dirigida a tus archivos de la carpeta /api
     const url = new URL(request.url);
     
-    if (url.pathname.startsWith("/api/")) {
-      // Extraemos el nombre del archivo que se quiere ejecutar (ej: "apuestas", "participantes")
-      const endpoint = url.pathname.replace("/api/", "");
-      
-      try {
-        // Importamos dinámicamente tu archivo de la carpeta api correspondiente
-        const apiModule = await import(`./api/${endpoint}`);
-        
-        // Si tu archivo de la api exporta una función por defecto (handler), la ejecutamos pasándole la petición
-        if (apiModule.default && typeof apiModule.default === "function") {
-          return await apiModule.default(request, env, ctx);
-        } else if (apiModule.handler && typeof apiModule.handler === "function") {
-          return await apiModule.handler(request, env, ctx);
-        }
-      } catch (error) {
-        return new Response(`Error ejecutando la API /api/${endpoint}`, { status: 500 });
-      }
+    // 2. Enrutador manual y fijo (así Cloudflare no se queja al compilar)
+    if (url.pathname === "/api/apuestas") {
+      return await (apuestas.default || (apuestas as any).handler)(request, env, ctx);
+    }
+    
+    if (url.pathname === "/api/participantes") {
+      return await (participantes.default || (participantes as any).handler)(request, env, ctx);
+    }
+    
+    if (url.pathname === "/api/meta") {
+      return await (meta.default || (meta as any).handler)(request, env, ctx);
     }
 
-    // 3. Si no es una petición de API, Cloudflare Pages/Workers servirá automáticamente 
-    // tus archivos visuales (HTML, JS, CSS) desde la raíz gracias a la configuración de "assets".
-    // Para que no se quede la pantalla fija con el texto de prueba, dejamos que continúe el flujo:
+    // 3. Si no es ninguna ruta de la API, sirve los archivos visuales de la porra
     return env.ASSETS ? await env.ASSETS.fetch(request) : new Response("Not Found", { status: 404 });
   },
 };
