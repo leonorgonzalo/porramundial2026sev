@@ -1,25 +1,32 @@
-import { pgTable, text, jsonb, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 
-export const participants = pgTable("participants", {
+// Tabla de participantes
+export const participants = sqliteTable("participants", {
   email: text("email").primaryKey(),
   nombre: text("nombre").notNull(),
-  data: jsonb("data").notNull().$type<Record<string, unknown>>(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  // En SQLite los JSON se guardan como texto básico
+  data: text("data").notNull().$type<Record<string, unknown>>(), 
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
 
-export const appResults = pgTable("app_results", {
-  id: integer("id").primaryKey().default(1),
-  data: jsonb("data").notNull().$type<Record<string, unknown>>(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+// Tabla de resultados de la porra
+export const appResults = sqliteTable("app_results", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  data: text("data").notNull().$type<Record<string, unknown>>(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).default(sql`(strftime('%s', 'now'))`),
 });
 
-export const payments = pgTable("payments", {
+// Tabla de pagos
+export const payments = sqliteTable("payments", {
   email: text("email").primaryKey(),
   fecha: text("fecha"),
 });
 
-export const appMeta = pgTable("app_meta", {
-  id: integer("id").primaryKey().default(1),
+// Tabla de configuración / meta de la app
+export const appMeta = sqliteTable("app_meta", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   cuota: integer("cuota").notNull().default(15),
-  locked: boolean("locked").notNull().default(false),
+  // SQLite no tiene tipo boolean real, usa un entero (0 o 1)
+  locked: integer("locked", { mode: "boolean" }).notNull().default(false),
 });
