@@ -1,9 +1,9 @@
-import { initDb } from "./db/index";
+import { initDb } from "./db/index.ts";
 
-// Importamos manualmente tus endpoints de la carpeta api
-import * as apuestas from "./api/apuestas";
-import * as participantes from "./api/participantes";
-import * as meta from "./api/meta";
+// Añadimos la extensión .ts para que el compilador de Cloudflare los localice del tirón
+import * as apuestas from "./api/apuestas.ts";
+import * as participantes from "./api/participantes.ts";
+import * as meta from "./api/meta.ts";
 
 export default {
   async fetch(request: Request, env: any, ctx: any) {
@@ -12,7 +12,7 @@ export default {
 
     const url = new URL(request.url);
     
-    // 2. Enrutador manual y fijo (así Cloudflare no se queja al compilar)
+    // 2. Enrutador manual
     if (url.pathname === "/api/apuestas") {
       return await (apuestas.default || (apuestas as any).handler)(request, env, ctx);
     }
