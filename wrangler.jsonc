@@ -1,9 +1,5 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "porramundial2026sev",
-  "compatibility_date": "2026-05-30",
-  "compatibility_flags": [
-    "nodejs_compat"
-  ],
-  "main": "db/index.ts"
+  "compatibility_date": "2026-05-30"
 }
