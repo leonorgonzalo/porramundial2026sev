@@ -2,7 +2,6 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import * as schema from "./schema";
 
-// Al leer directamente process.env, la base de datos está disponible al 100% desde el inicio
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
