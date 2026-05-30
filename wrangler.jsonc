@@ -9,10 +9,7 @@
   "assets": {
     "directory": "."
   },
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_id": "porra-db"
-    }
-  ]
+  "vars": {
+    "DATABASE_URL": "postgresql://postgres.kfrvtkanhooxsysduowb:17101996LeoGF!@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?sslmode=require"
+  }
 }
