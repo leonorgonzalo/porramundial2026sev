@@ -1,31 +1,31 @@
-import { initDb } from "./db/index.js";
+import { initDb } from "./db/index";
 
-// Usamos la extensión .js para que el compilador de Cloudflare los mapee correctamente
-import * as apuestas from "./api/apuestas.js";
-import * as participantes from "./api/participantes.js";
-import * as meta from "./api/meta.js";
+// Volvemos al formato sin extensiones para que TypeScript no proteste
+import * as apuestasEndpoint from "./api/apuestas";
+import * as participantesEndpoint from "./api/participantes";
+import * as metaEndpoint from "./api/meta";
 
 export default {
   async fetch(request: Request, env: any, ctx: any) {
-    // 1. Inyectamos la base de datos de Cloudflare pasándole el env
+    // 1. Inyectamos la base de datos pasándole el env
     initDb(env);
 
     const url = new URL(request.url);
     
-    // 2. Enrutador manual para tus endpoints
+    // 2. Enrutador manual sin interferencias de nombres
     if (url.pathname === "/api/apuestas") {
-      return await (apuestas.default || (apuestas as any).handler)(request, env, ctx);
+      return await (apuestasEndpoint.default || (apuestasEndpoint as any).handler)(request, env, ctx);
     }
     
     if (url.pathname === "/api/participantes") {
-      return await (participantes.default || (participantes as any).handler)(request, env, ctx);
+      return await (participantesEndpoint.default || (participantesEndpoint as any).handler)(request, env, ctx);
     }
     
     if (url.pathname === "/api/meta") {
-      return await (meta.default || (meta as any).handler)(request, env, ctx);
+      return await (metaEndpoint.default || (metaEndpoint as any).handler)(request, env, ctx);
     }
 
-    // 3. Sirve los archivos visuales de la porra de la raíz si no es una petición de API
+    // 3. Sirve la interfaz visual de la porra si no es una petición de API
     return env.ASSETS ? await env.ASSETS.fetch(request) : new Response("Not Found", { status: 404 });
   },
 };
