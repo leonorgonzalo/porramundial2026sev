@@ -5,8 +5,14 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
-  "main": "index.ts", 
+  "main": "index.ts",
   "assets": {
     "directory": "."
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_id": "porra-db"
+    }
+  ]
 }
