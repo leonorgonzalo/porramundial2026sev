@@ -1,13 +1,21 @@
-import { initDb } from "./db/index"; // Asegúrate de que esta ruta apunte bien a tu carpeta db
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "./schema";
 
-export default {
-  async fetch(request: Request, env: any) {
-    // Inyectamos la base de datos de Cloudflare antes de procesar nada
-    initDb(env);
+let activeDb: any = null;
 
-    // Aquí es donde tu sistema procesaría las rutas normales de /api.
-    // De momento, para que Cloudflare valide el script con éxito y se ponga en VERDE,
-    // le devolvemos una respuesta directa de control:
-    return new Response("¡Porra Mundial 2026 Online en Cloudflare!");
-  },
-};
+// Esta función la llamará el index principal
+export function initDb(env: any) {
+  if (!activeDb) {
+    activeDb = drizzle(env.DB, { schema });
+  }
+}
+
+// Tus archivos de la carpeta /api seguirán usando esta 'db'
+export const db = new Proxy({}, {
+  get(target, prop) {
+    if (!activeDb) {
+      throw new Error("La base de datos D1 no ha sido inicializada todavía.");
+    }
+    return Reflect.get(activeDb, prop);
+  }
+}) as ReturnType<typeof drizzle<typeof schema>>;
