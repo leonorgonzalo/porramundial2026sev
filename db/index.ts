@@ -1,5 +1,6 @@
 import { drizzle } from "drizzle-orm/d1";
-import * as schema from "./schema.js";
+// Cambia esto quitando el ".js" del final:
+import * as schema from "./schema"; 
 
 export interface Env {
   DB: D1Database;
