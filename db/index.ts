@@ -2,6 +2,13 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import * as schema from "./schema";
 
-// Conectamos a Supabase usando el puente HTTP compatible sin instalar paquetes extra
-const sql = neon(process.env.DATABASE_URL!);
-export const db = drizzle(sql, { schema });
+// Dejamos la variable preparada
+export let db: any;
+
+// Esta función configurará la conexión usando la URL de Supabase
+export function initDb(env: any) {
+  if (!db) {
+    const sql = neon(env.DATABASE_URL || process.env.DATABASE_URL);
+    db = drizzle(sql, { schema });
+  }
+}
